@@ -103,7 +103,7 @@ class Formulae:
 
             #for some reason this evals to And([False, False, False, False])
             straight_cut_states = And([vars.states.get((i-1,j)) ==
-             vars.states.get((i,(j+vars.choices.get(i))%vars.depth)) for j in range(vars.depth)])
+             vars.states.get((i,(j+vars.choices.get(i))%vars.depth)) for j in range(vars.depth)]) ## IMPLEMENT STATES AS ARRAY
              
             straight_cut_selected = vars.selected.get(i-1) == ((vars.selected.get(i) +
              vars.choices.get(i))%vars.depth)
