@@ -1,13 +1,35 @@
 from z3 import *
 import synth_utils
 
+
+class StatesAPI:
+    def __init__(self, k, depth):
+        self.depth = depth
+        self.state_vectors = {}
+        self.state_vectors.update({0 : Array('s_0', IntSort(), IntSort())})
+
+        for i in range(1, k+1):
+            self.state_vectors.update({i : Array('s_{}'.format(i), IntSort(), IntSort())})
+
+    def get(self, tpl):
+        i = tpl[0]
+        j = tpl[1]
+        
+        # if j >= self.depth:
+        #     print("bad news! don't call .get() with a value >= depth, remember, indeces are from 0\n." +
+        #     "We are dealing with potentially infinite arrays and i have only a little laptop, thank you")
+        #     raise ValueError
+
+        return self.state_vectors.get(i)[j]
+        
+
 class Variables:
     def __init__(self, k, depth):
         #self.solver = Solver()
         self.k = k
         self.depth = depth
         self.comps = {}
-        self.states = {}
+        self.states = StatesAPI(k, depth)
         self.selected = {}
         self.number_of_operators = 15
         self.lib_size = self.k + self.number_of_operators #  warning - must update this value if changing number of components in library
@@ -15,8 +37,8 @@ class Variables:
                           # k is the length of the trick. Remember, is shorter than the number of components. 
         self.selected.update({0 : Int('aud_0')})
         
-        for j in range(self.depth):
-            self.states.update({(0, j) : Int("s_0_{}".format(j))})
+        # for j in range(self.depth):
+        #     self.states.update({(0, j) : Int("s_0_{}".format(j))})
     
         self.choices = {}
 
@@ -28,8 +50,8 @@ class Variables:
             self.comps.update({i : Int("i_{}".format(i))})
             self.choices.update({i : Int("c_{}".format(i))})
             self.selected.update({i : Int("aud_{}".format(i))})
-            for j in range(self.depth):
-                self.states.update({(i,j) : Int("s_{0}_{1}".format(i, j))})
+            # for j in range(self.depth):
+            #     self.states.update({(i,j) : Int("s_{0}_{1}".format(i, j))})
 
 
     def constrain_values(self):
@@ -61,10 +83,16 @@ class Variables:
         # that is: c_m >= 0 and c_m < depth for all m
         choice_vals = []
         for i in range(1, self.k+1):
-            choice_vals.append(And([self.choices.get(i) <= 0, self.choices.get(i) < self.depth]))
+            choice_vals.append(And([self.choices.get(i) >= 0, self.choices.get(i) < self.depth]))
             
         # conjoins these formulae into value_range
         value_range = And([And(component_vals), And(states_vals), And(choice_vals), And(selected_vals)])
+        f = open('range', 'w')
+        temp = Solver()
+        temp.add(value_range)
+        f.write(str(temp.assertions()))
+        f.close()
+
         return value_range
 
 
@@ -118,9 +146,9 @@ class Formulae:
 
             top_2_to_bottom = And([top_2_to_bottom_selected, top_2_to_bottom_states])
 
-            turn_top = vars.states.get(i-1, 0) == vars.states.get(i, 0)*-1 # for some reason always evals true
+            turn_top = vars.states.get((i-1, 0)) == vars.states.get((i, 0))*-1 # for some reason always evals true
 
-            noop = And([vars.states.get(i-1, j) == vars.states.get(i, j) for j in range(vars.depth)])
+            noop = And([vars.states.get((i-1, j)) == vars.states.get((i, j)) for j in range(vars.depth)])
 
             valid_transitions.append(And([If(Or(vars.comps.get(i) == 1, vars.comps.get(i) == 2, vars.comps.get(i) == 3), top_to_bottom, True),
             If(Or(vars.comps.get(i) == 4, vars.comps.get(i) == 5, vars.comps.get(i) == 6), flip_2, True),
@@ -136,6 +164,7 @@ class Formulae:
                 f = open('trans.txt', 'w')
                 f.write(str(slip))
                 f.close()
+
 
 
         return And(valid_transitions)
@@ -170,7 +199,7 @@ class Formulae:
         return bb_hummer_states
 
 
-variables = Variables(12, 4)
+variables = Variables(12, 3)
 formulae = Formulae(variables)
 val_range = variables.value_range
 
@@ -178,11 +207,17 @@ spec = formulae.bb_hummer_states()
 trans = formulae.constrain_connections()
 
 phi_des = And([val_range, trans])
-ver = Not(Implies(phi_des, spec))
+#ver = Not(Implies(phi_des, spec))
+
+ver = And(phi_des, Not(spec))
 
 original_baby = synth_utils.list_to_constraint(
     [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
 )
+
+# some_choice_vector = synth_utils.list_to_constraint(
+#     [0,0,0,0,0,0,0,0,0,0,0,0], variables.choices
+# )
 s = Solver()
 s.add(ver, original_baby)
 f = open('query.txt', 'w')
@@ -190,3 +225,4 @@ f = open('query.txt', 'w')
 f.write(str(s.assertions()))
 f.close()
 print(s.check())
+print(s.model())
