@@ -27,4 +27,17 @@ def pp_model(model, variables):
             print('comp_{}: {}'.format(i, model[variables.comps.get(i)]))
             print('choice_{}: {}'.format(i, model[variables.choices.get(i)]))
         print('\n')
-            
+
+def counter_example_from_model(model, variables):
+    counter_example = []
+    for i in range(1, variables.k+1):
+        counter_example.append(variables.choices.get(i) == model[variables.choices.get(i)])
+        counter_example.append(variables.states.get_array(i) == model[variables.states.get_array(i)]) 
+    return And(counter_example)
+        
+def candidate_from_model(model, variables):
+    # extracts the connections into constraints
+    candidate = []
+    for i in range(1, variables.k+1):
+        candidate.append(variables.comps.get(i) == model[variables.comps.get(i)])
+    return And(candidate)
