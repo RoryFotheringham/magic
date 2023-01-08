@@ -11,6 +11,8 @@ class StatesAPI:
         for i in range(1, k+1):
             self.state_vectors.update({i : Array('s_{}'.format(i), IntSort(), IntSort())})
 
+    def get_array(self, i):
+        return self.state_vectors.get(i)
     def get(self, tpl):
         i = tpl[0]
         j = tpl[1]
@@ -51,13 +53,15 @@ class Variables:
             self.choices.update({i : Int("c_{}".format(i))})
             self.selected.update({i : Int("aud_{}".format(i))})
             # for j in range(self.depth):
-            #     self.states.update({(i,j) : Int("s_{0}_{1}".format(i, j))})
+            #     self.states.update({(i,j) : Int("s_{0}_{1}".format(i, j))})        
 
 
     def constrain_values(self):
         #this function should return a formula, a satisfying assignment to which is the values of the vars being in the right range
         
+
         selected_vals = []
+        # constrains 
         selected_vals.append(self.selected.get(0) == self.depth-1)
         for i in range(1, self.k+1):
             selected_vals.append(And([self.selected.get(i) >= 0, self.selected.get(i) < self.depth]))
@@ -72,7 +76,9 @@ class Variables:
                     component_vals.append(self.comps.get(i) != self.comps.get(j))
             
         #constrains values of each element of each state vector to be either 1 or -1
+        all_face_down = And([self.states.get((0, j)) == -1 for j in range(self.depth)])
         states_vals = []
+        states_vals.append(all_face_down)
         for i in range(1, self.k+1):
             for j in range(self.depth):
                 # to change this value range, add all valid values to the disjunction below
@@ -84,6 +90,8 @@ class Variables:
         choice_vals = []
         for i in range(1, self.k+1):
             choice_vals.append(And([self.choices.get(i) >= 0, self.choices.get(i) < self.depth]))
+
+        
             
         # conjoins these formulae into value_range
         value_range = And([And(component_vals), And(states_vals), And(choice_vals), And(selected_vals)])
@@ -110,6 +118,11 @@ class Formulae:
         valid_transitions = []
 
         for i in range(1, vars.k+1):
+
+            noop_states = And([vars.states.get((i-1, j)) == vars.states.get((i, j)) for j in range(vars.depth)])
+            noop_selected = And(vars.selected.get(i-1) == vars.selected.get(i))
+            noop = And([noop_states, noop_selected])
+
             top_to_bottom_states = And([vars.states.get((i-1, j)) == 
             vars.states.get((i, (j + vars.depth-1)%vars.depth)) for j in range(vars.depth)])
 
@@ -118,20 +131,29 @@ class Formulae:
 
             top_to_bottom = And([top_to_bottom_states, top_to_bottom_selected])
 
-            flip_2_states = And([vars.states.get((i-1, 0)) == vars.states.get((i, 0)) * -1,
-                vars.states.get((i-1, 1)) == vars.states.get((i, 1)) * -1])
+            flip_2_states = If(vars.states.get((i-1, 0)) == vars.states.get((i-1,1)),
+             And([vars.states.get((i-1, 0)) == vars.states.get((i, 0)) * -1,
+                vars.states.get((i-1, 1)) == vars.states.get((i, 1)) * -1]), noop)
+
+
+            flip_2_extra_states = And([vars.states.get((i-1, j)) ==
+             vars.states.get((i, j)) for j in range(2, vars.depth)])
 
             flip_2_selected = And([If(vars.selected.get(i-1) == 0, vars.selected.get(i) == 1, True),
             If(vars.selected.get(i-1) == 1, vars.selected.get(i) == 0, True)])
 
-            flip_2 = And([flip_2_states, flip_2_selected])
+            flip_2_extra_selected = And([If(vars.selected.get(i-1) == j,
+             vars.selected.get(i) == j, True) for j in range (2, vars.depth)])
+
+            flip_2 = And([flip_2_states, flip_2_selected, flip_2_extra_selected, flip_2_extra_states])
+
 
             #we assume that a choice value 0 is a cut at the deck between the 0th card and the rest of the deck
             #0th card being the first card - the card at index 0
 
             #for some reason this evals to And([False, False, False, False])
             straight_cut_states = And([vars.states.get((i-1,j)) ==
-             vars.states.get((i,(j+vars.choices.get(i))%vars.depth)) for j in range(vars.depth)]) ## IMPLEMENT STATES AS ARRAY
+             vars.states.get((i,(j-vars.choices.get(i))%vars.depth)) for j in range(vars.depth)]) ## IMPLEMENT STATES AS ARRAY
              
             straight_cut_selected = vars.selected.get(i-1) == ((vars.selected.get(i) +
              vars.choices.get(i))%vars.depth)
@@ -146,9 +168,15 @@ class Formulae:
 
             top_2_to_bottom = And([top_2_to_bottom_selected, top_2_to_bottom_states])
 
-            turn_top = vars.states.get((i-1, 0)) == vars.states.get((i, 0))*-1 # for some reason always evals true
+            turn_top_states = vars.states.get((i-1, 0)) == vars.states.get((i, 0))*-1 
 
-            noop = And([vars.states.get((i-1, j)) == vars.states.get((i, j)) for j in range(vars.depth)])
+            turn_top_extra_states = And([vars.states.get((i-1, j)) ==
+             vars.states.get((i, j)) for j in range(1, vars.depth)])
+
+            turn_top_extra_selected = vars.selected.get(i-1) == vars.selected.get(i)
+
+            turn_top = And([turn_top_states, turn_top_extra_states, turn_top_extra_selected])
+
 
             valid_transitions.append(And([If(Or(vars.comps.get(i) == 1, vars.comps.get(i) == 2, vars.comps.get(i) == 3), top_to_bottom, True),
             If(Or(vars.comps.get(i) == 4, vars.comps.get(i) == 5, vars.comps.get(i) == 6), flip_2, True),
@@ -194,12 +222,16 @@ class Formulae:
         odd_is_selected = And([If(Sum(final_state_vector) == vars.depth-2, selected_must_be_minus, True),
          If(Sum(final_state_vector) == -(vars.depth+2), selected_must_be_positive, True)])
 
+
+        
         bb_hummer_states = And([odd_is_selected, only_one_odd_card])
 
         return bb_hummer_states
 
 
-variables = Variables(12, 3)
+
+
+variables = Variables(12, 4)
 formulae = Formulae(variables)
 val_range = variables.value_range
 
@@ -211,18 +243,27 @@ phi_des = And([val_range, trans])
 
 ver = And(phi_des, Not(spec))
 
-original_baby = synth_utils.list_to_constraint(
-    [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
-)
-
-# some_choice_vector = synth_utils.list_to_constraint(
-#     [0,0,0,0,0,0,0,0,0,0,0,0], variables.choices
+# original_baby = synth_utils.list_to_constraint(
+#     [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
 # )
+
+working_baby = synth_utils.list_to_constraint(
+     [1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15, 17], variables.comps
+)
+print(working_baby)
+
 s = Solver()
-s.add(ver, original_baby)
+s.add(ver, working_baby)
 f = open('query.txt', 'w')
 #st = s.sexpr()
 f.write(str(s.assertions()))
 f.close()
-print(s.check())
-print(s.model())
+check = s.check()
+print(check)
+if str(check) == 'sat': # this means there is a counter example.
+                   # there is some assignment to the choices such that the 
+                   # the specification is violated
+    model = s.model()
+    synth_utils.pp_model(model, variables)
+
+    

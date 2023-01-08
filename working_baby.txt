@@ -1,0 +1,15 @@
+ok, I need to write some way to read the output because z3.model.check() is messy.
+
+[1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15]
+
+[1: top_to_bottom, 
+13: turn_top,
+ 7: straight_cut, 
+ 4: flip_2,
+ 8: straight_cut,
+ 5: flip_2,
+ 9: straight_cut,
+14: turn_top,
+ 2: top_to_bottom,
+ 3: top_to_bottom,
+15: turn_top]
