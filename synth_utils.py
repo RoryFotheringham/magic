@@ -16,7 +16,7 @@ def list_to_constraint(lst, dict):
 
     return And(constraint)
 
-def pp_model(model, variables):
+def pp_counter_model(model, variables):
     for i in range(0, variables.k+1):
         state_vector = []
         for j in range(variables.depth):
@@ -32,7 +32,8 @@ def counter_example_from_model(model, variables):
     counter_example = []
     for i in range(1, variables.k+1):
         counter_example.append(variables.choices.get(i) == model[variables.choices.get(i)])
-        counter_example.append(variables.states.get_array(i) == model[variables.states.get_array(i)]) 
+        counter_example.append(variables.states.get_array(i) == model[variables.states.get_array(i)])
+        counter_example.append(variables.selected.get(i) == model[variables.selected.get(i)]) 
     return And(counter_example)
         
 def candidate_from_model(model, variables):
@@ -41,3 +42,18 @@ def candidate_from_model(model, variables):
     for i in range(1, variables.k+1):
         candidate.append(variables.comps.get(i) == model[variables.comps.get(i)])
     return And(candidate)
+
+def trick_from_model(model, variables):
+    trick = []
+    for i in range(1, variables.k+1):
+        trick.append(model[variables.comps.get(i)])
+    return trick
+
+def trick_from_candidate(candidate, variables):
+    print(candidate)
+
+def init_input_set(variables):
+    input_set = []
+    for i in range(1, variables.k+1):
+        input_set.append(variables.choices.get(i) == 0)
+    return [And(input_set)]

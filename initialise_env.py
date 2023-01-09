@@ -151,9 +151,8 @@ class Formulae:
             #we assume that a choice value 0 is a cut at the deck between the 0th card and the rest of the deck
             #0th card being the first card - the card at index 0
 
-            #for some reason this evals to And([False, False, False, False])
             straight_cut_states = And([vars.states.get((i-1,j)) ==
-             vars.states.get((i,(j-vars.choices.get(i))%vars.depth)) for j in range(vars.depth)]) ## IMPLEMENT STATES AS ARRAY
+             vars.states.get((i,(j-vars.choices.get(i))%vars.depth)) for j in range(vars.depth)])
              
             straight_cut_selected = vars.selected.get(i-1) == ((vars.selected.get(i) +
              vars.choices.get(i))%vars.depth)
@@ -228,65 +227,44 @@ class Formulae:
 
         return bb_hummer_states
 
-def verify(variables, phi_des, phi_spec, candidate):
-    ver = And(phi_des, Not(phi_spec))
-    s = Solver()
-    s.add(ver, candidate)
-    check = s.check()
-    if str(check) == 'sat':
-        model = s.model()
-        counter_example = synth_utils.counter_example_from_model(model, variables)
-        return counter_example
-    else:
-        return None # None should be caught signifying good trick
 
-def synthesise(variables, phi_des, phi_spec, input_set):
-    synth = And(phi_des, phi_spec)
-    s = Solver()
-    s.add(synth, input_set)
-    check = s.check()
-    if str(check) == 'unsat':
-        return None
-    else:
-        model = s.model()
-        candidate = synth_utils.candidate_from_model(model, variables)
-        return candidate
+def initialise_env(k, depth):
+    variables = Variables(k, depth)
+    formulae = Formulae(variables)
+    phi_spec = formulae.bb_hummer_states()
+
+    trans = formulae.constrain_connections()
+    val_range = variables.value_range
+    phi_des = And([val_range, trans])
+    return variables, formulae, phi_des, phi_spec
 
 
-variables = Variables(12, 4)
-formulae = Formulae(variables)
-val_range = variables.value_range
-
-phi_spec = formulae.bb_hummer_states()
-trans = formulae.constrain_connections()
-
-phi_des = And([val_range, trans])
 #ver = Not(Implies(phi_des, spec))
 
-ver = And(phi_des, Not(phi_spec))
+# ver = And(phi_des, Not(phi_spec))
 
-original_baby = synth_utils.list_to_constraint(
-    [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
-)
+# original_baby = synth_utils.list_to_constraint(
+#     [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
+# )
 
-working_baby = synth_utils.list_to_constraint(
-     [1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15, 17], variables.comps
-)
+# working_baby = synth_utils.list_to_constraint(
+#      [1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15, 17], variables.comps
+# )
 
-s = Solver()
-s.add(ver, original_baby)
-f = open('query.txt', 'w')
-#st = s.sexpr()
-f.write(str(s.assertions()))
-f.close()
-check = s.check()
-print(check)
-if str(check) == 'sat': # this means there is a counter example.
-                   # there is some assignment to the choices such that the 
-                   # the specification is violated
-    model = s.model()
-    synth_utils.pp_model(model, variables)
-    counter_example = synth_utils.counter_example_from_model(model, variables)
+# s = Solver()
+# s.add(ver, original_baby)
+# f = open('query.txt', 'w')
+# #st = s.sexpr()
+# f.write(str(s.assertions()))
+# f.close()
+# check = s.check()
+# print(check)
+# if str(check) == 'sat': # this means there is a counter example.
+#                    # there is some assignment to the choices such that the 
+#                    # the specification is violated
+#     model = s.model()
+#     synth_utils.pp_model(model, variables)
+#     counter_example = synth_utils.counter_example_from_model(model, variables)
 
 
     
