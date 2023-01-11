@@ -49,7 +49,20 @@ def trick_from_model(model, variables):
         trick.append(model[variables.comps.get(i)])
     return trick
 
-def trick_from_candidate(candidate, variables):
+def trick_to_strings(trick_list, formulae):
+    move_dict = formulae.move_dict
+    
+    strings = []
+    for move in trick_list:
+        name = move_dict.get(int(move.as_long()))
+        if name:
+            strings.append(name)
+    return strings
+
+
+def trick_from_candidate(candidate, variables, formulae):
+    # for i in range(1, variables.k+1):
+    #     print(candidate[0]
     print(candidate)
 
 def init_input_set(variables):

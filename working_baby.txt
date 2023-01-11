@@ -1,4 +1,4 @@
-ok, I need to write some way to read the output because z3.model.check() is messy.
+    ok, I need to write some way to read the output because z3.model.check() is messy.
 
 [1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15]
 

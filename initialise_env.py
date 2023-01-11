@@ -108,12 +108,28 @@ class Formulae:
     def __init__(self, vars):
         self.vars = vars
         self.value_range = vars.value_range
+        # this causes lots of coupling and I should think about a way
+        # to automatically assign the sumbers - maybe I could loop through
+        # each one assigning the next number untill number of hings is exhausted
+        # one thing I'm sure of, however, is that that is a job for another day. 
+        self.move_dict = {1 : 'top_to_bottom', 
+                            2 : 'top_to_bottom',
+                            3 : 'top_to_bottom', 
+                            4 : 'flip_2',
+                            5 : 'flip_2',
+                            6 : 'flip_2',
+                            7 : 'straight_cut',
+                            8 : 'straight_cut',
+                            9 : 'straight_cut',
+                            10: 'top_2_to_bottom',
+                            11: 'top_2_to_bottom',
+                            12: 'top_2_to_bottom',
+                            13: 'turn_top',
+                            14: 'turn_top',
+                            15: 'turn_top'}
 
     def constrain_connections(self):
-        # todo 
-        # on a day that i feel good, refactor this so each component has a method
-        #  that takes i and returns the variable constraining the respective component
-        # this will be really useful when I start to write for other trick types.
+ 
         vars = self.vars
         valid_transitions = []
 
@@ -185,15 +201,7 @@ class Formulae:
             And([If(vars.comps.get(i) == j+vars.number_of_operators+1, noop, True)
              for j in range(vars.k)])
             ]))
-            if i == 2:
-                slip = Solver()
-                slip.add(valid_transitions)
-                f = open('trans.txt', 'w')
-                f.write(str(slip))
-                f.close()
-
-
-
+        
         return And(valid_transitions)
 
     def bb_hummer_states(self):

@@ -25,24 +25,31 @@ def synthesise(variables, phi_des, phi_spec, input_set):
     else:
         model = s.model()
         candidate = synth_utils.candidate_from_model(model, variables)
-        return candidate
+        return candidate, model
 
+# in order to extract the values of the component vector I need to directly query
+# a satisfied model. For this, synthesiser needs to return a model which is only 
+# used when the synthesis is complete and we want to return a trick. 
+# for all other occasions, it is fine for it to float around as a global
+# because it is a pretty lightweight object
 
 def synth_loop(k, depth):
     variables, formulae, phi_des, phi_spec = initialise_env(k, depth)
 
     input_set = synth_utils.init_input_set(variables)
     while True:
-        candidate = synthesise(variables, phi_des, phi_spec, input_set)
+        candidate, model = synthesise(variables, phi_des, phi_spec, input_set)
         if candidate == None: # we must explicitly check None equality 
+                              # because z3 type can't cast to concrete bool
             print('synthesis failed')
             break
         counter_example = verify(variables, phi_des, phi_spec, candidate)
         if counter_example == None:
             print('synthesis complete!')
-            synth_utils.trick_from_candidate(candidate, variables)
+            trick_list = synth_utils.trick_from_model(model, variables)
+            print(synth_utils.trick_to_strings(trick_list, formulae))
             break
         else:
             input_set.append(counter_example)
 
-synth_loop(12, 4)
+synth_loop(15, 10)
