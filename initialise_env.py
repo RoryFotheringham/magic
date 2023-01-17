@@ -204,6 +204,25 @@ class Formulae:
         
         return And(valid_transitions)
 
+    def forbid_trivial_tricks(self):
+        vars = self.vars
+        cut_assertions_disjunct = []
+        cut_assertions_conjunct = []
+        for i in range(1, vars.k+1):
+            if i > 1 and i < vars.k: # WARNING BAD SOFTWARE - THE CUT VALUES ARE 
+                                     # VERY STRONGLY COUPLED CHANGE AT EARLIEST CONVINIENCE
+                cut_assertions_disjunct.append(vars.comps.get(i) == 7)
+                cut_assertions_disjunct.append(vars.comps.get(i) == 8)
+                cut_assertions_disjunct.append(vars.comps.get(i) == 9)
+                
+            if i == 1 or i == vars.k:
+                cut_assertions_conjunct.append(vars.comps.get(i) != 7)
+                cut_assertions_conjunct.append(vars.comps.get(i) != 8)
+                cut_assertions_conjunct.append(vars.comps.get(i) != 9)
+                
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct)])
+        return forbid_trivial_tricks
+
     def bb_hummer_states(self):
         # returns final state constraint formula for baby_hummer trick. 
         vars = self.vars
@@ -240,10 +259,11 @@ def initialise_env(k, depth):
     variables = Variables(k, depth)
     formulae = Formulae(variables)
     phi_spec = formulae.bb_hummer_states()
+    forbid_trivial = formulae.forbid_trivial_tricks()
 
     trans = formulae.constrain_connections()
     val_range = variables.value_range
-    phi_des = And([val_range, trans])
+    phi_des = And([val_range, trans, forbid_trivial])
     return variables, formulae, phi_des, phi_spec
 
 

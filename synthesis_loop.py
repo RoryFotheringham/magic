@@ -4,7 +4,8 @@ from z3 import *
 
 
 def verify(variables, phi_des, phi_spec, candidate):
-    ver = And(phi_des, Not(phi_spec))
+    ver = And(phi_des, Not(phi_spec)) 
+                                     
     s = Solver()
     s.add(ver, candidate)
     check = s.check()
@@ -34,10 +35,14 @@ def synthesise(variables, phi_des, phi_spec, input_set):
 # because it is a pretty lightweight object
 
 def synth_loop(k, depth):
+    i = 0
+    
     variables, formulae, phi_des, phi_spec = initialise_env(k, depth)
 
     input_set = synth_utils.init_input_set(variables)
     while True:
+        i += 1
+        print(i)
         candidate, model = synthesise(variables, phi_des, phi_spec, input_set)
         if candidate == None: # we must explicitly check None equality 
                               # because z3 type can't cast to concrete bool
@@ -50,6 +55,7 @@ def synth_loop(k, depth):
             print(synth_utils.trick_to_strings(trick_list, formulae))
             break
         else:
+            #synth_utils.pp_counter_model(counter_example, variables)
             input_set.append(counter_example)
 
-synth_loop(15, 10)
+synth_loop(15, 4)
