@@ -108,26 +108,41 @@ class Formulae:
     def __init__(self, vars):
         self.vars = vars
         self.value_range = vars.value_range
+        
         # this causes lots of coupling and I should think about a way
         # to automatically assign the sumbers - maybe I could loop through
         # each one assigning the next number untill number of hings is exhausted
         # one thing I'm sure of, however, is that that is a job for another day. 
-        self.move_dict = {1 : 'top_to_bottom', 
-                            2 : 'top_to_bottom',
-                            3 : 'top_to_bottom', 
-                            4 : 'flip_2',
-                            5 : 'flip_2',
-                            6 : 'flip_2',
-                            7 : 'straight_cut',
-                            8 : 'straight_cut',
-                            9 : 'straight_cut',
-                            10: 'top_2_to_bottom',
-                            11: 'top_2_to_bottom',
-                            12: 'top_2_to_bottom',
-                            13: 'turn_top',
-                            14: 'turn_top',
-                            15: 'turn_top'}
+        
+        def generate_dicts(title_list):
+            assignments = 1
+            move_comps_dict = {}
+            comp_move_dict = {}
+            while assignments <= vars.number_of_operators:
+                
+                move_name = title_list[(assignments-1)%(len(title_list))]
+                if move_comps_dict.get(move_name):
+                    
+                    #move_comps_dict.update({move_name: move_comps_dict.get(move_name).append(assignments)})
+                    move_comps_dict.get(move_name).append(assignments)
+                else:
+                    move_comps_dict.update({move_name : [assignments]})
+                comp_move_dict.update({assignments : move_name})
+                assignments += 1
+            return move_comps_dict, comp_move_dict
+        
+        move_comps_dict, comp_move_dict = generate_dicts(['top_to_bottom', 
+                                                          'flip_2',
+                                                          'straight_cut',
+                                                          'top_2_to_bottom',
+                                                          'turn_top'])
+                
+        self.move_comps_dict = move_comps_dict
+        self.comp_move_dict = comp_move_dict
+        
 
+        
+        
     def constrain_connections(self):
  
         vars = self.vars
@@ -192,15 +207,23 @@ class Formulae:
 
             turn_top = And([turn_top_states, turn_top_extra_states, turn_top_extra_selected])
 
-
-            valid_transitions.append(And([If(Or(vars.comps.get(i) == 1, vars.comps.get(i) == 2, vars.comps.get(i) == 3), top_to_bottom, True),
-            If(Or(vars.comps.get(i) == 4, vars.comps.get(i) == 5, vars.comps.get(i) == 6), flip_2, True),
-            If(Or(vars.comps.get(i) == 7, vars.comps.get(i) == 8, vars.comps.get(i) == 9), straight_cut, True),
-            If(Or(vars.comps.get(i) == 10,vars.comps.get(i) == 11, vars.comps.get(i) == 12), top_2_to_bottom, True), 
-            If(Or(vars.comps.get(i) == 13, vars.comps.get(i) == 14, vars.comps.get(i) == 15), turn_top, True), 
+            valid_transitions.append(And([If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('top_to_bottom')]), top_to_bottom, True),
+            If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('flip_2')]), flip_2, True),
+            If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('straight_cut')]), straight_cut, True),
+            If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('top_2_to_bottom')]), top_2_to_bottom, True), 
+            If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('turn_top')]), turn_top, True), 
             And([If(vars.comps.get(i) == j+vars.number_of_operators+1, noop, True)
              for j in range(vars.k)])
             ]))
+
+            # valid_transitions.append(And([If(Or(vars.comps.get(i) == 1, vars.comps.get(i) == 2, vars.comps.get(i) == 3), top_to_bottom, True),
+            # If(Or(vars.comps.get(i) == 4, vars.comps.get(i) == 5, vars.comps.get(i) == 6), flip_2, True),
+            # If(Or(vars.comps.get(i) == 7, vars.comps.get(i) == 8, vars.comps.get(i) == 9), straight_cut, True),
+            # If(Or(vars.comps.get(i) == 10,vars.comps.get(i) == 11, vars.comps.get(i) == 12), top_2_to_bottom, True), 
+            # If(Or(vars.comps.get(i) == 13, vars.comps.get(i) == 14, vars.comps.get(i) == 15), turn_top, True), 
+            # And([If(vars.comps.get(i) == j+vars.number_of_operators+1, noop, True)
+            #  for j in range(vars.k)])
+            # ]))
         
         return And(valid_transitions)
 
@@ -209,18 +232,40 @@ class Formulae:
         cut_assertions_disjunct = []
         cut_assertions_conjunct = []
         for i in range(1, vars.k+1):
-            if i > 1 and i < vars.k: # WARNING BAD SOFTWARE - THE CUT VALUES ARE 
-                                     # VERY STRONGLY COUPLED CHANGE AT EARLIEST CONVINIENCE
-                cut_assertions_disjunct.append(vars.comps.get(i) == 7)
-                cut_assertions_disjunct.append(vars.comps.get(i) == 8)
-                cut_assertions_disjunct.append(vars.comps.get(i) == 9)
+            if i > 1 and i < vars.k:   
+                cut_assertions_disjunct = cut_assertions_disjunct + [vars.comps.get(i) == comp for comp in self.move_comps_dict.get('straight_cut')]
                 
             if i == 1 or i == vars.k:
-                cut_assertions_conjunct.append(vars.comps.get(i) != 7)
-                cut_assertions_conjunct.append(vars.comps.get(i) != 8)
-                cut_assertions_conjunct.append(vars.comps.get(i) != 9)
+                cut_assertions_conjunct = cut_assertions_conjunct + [vars.comps.get(i) != comp for comp in self.move_comps_dict.get('straight_cut')]
+
+        all_flip_moves = [] # all flip moves asserts the disjunction that a component must be a flip move
+                            # over all components. This is vacuous on its own but the array can be spliced
+                            # and we can constrain the range of flip moves. 
+        for i in range(1, vars.k+1):
+            flip_dis = Or(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('turn_top')]),
+                           Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('flip_2')]))
+            
+            all_flip_moves.append(flip_dis)
+            
+        
+        
+        flip_after_cut_list = [] # this constrains the range of flip moves conditional on the presence of
+                                 # a cut move to ensure that a flip is always after a cut
+        for i in range(1, vars.k+1):
+            flip_after_cut = If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('straight_cut')]),
+                                Or(all_flip_moves[i:]), True)
+            
+            flip_after_cut_list.append(flip_after_cut)
+            
+        with open('flip_after_cut_list.txt', 'w') as f:
+            f.write(str(flip_after_cut_list))
+
                 
-        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct)])
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list)])
+        
+        
+        
+        
         return forbid_trivial_tricks
 
     def bb_hummer_states(self):

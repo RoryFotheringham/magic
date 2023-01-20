@@ -50,7 +50,7 @@ def trick_from_model(model, variables):
     return trick
 
 def trick_to_strings(trick_list, formulae):
-    move_dict = formulae.move_dict
+    move_dict = formulae.comp_move_dict
     
     strings = []
     for move in trick_list:
