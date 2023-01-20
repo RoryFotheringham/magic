@@ -246,11 +246,15 @@ class Formulae:
 
 
         odd_is_selected = And([If(Sum(final_state_vector) == vars.depth-2, selected_must_be_minus, True),
-         If(Sum(final_state_vector) == -(vars.depth+2), selected_must_be_positive, True)])
+         If(Sum(final_state_vector) == -(vars.depth-2), selected_must_be_positive, True)])
 
 
         
         bb_hummer_states = And([odd_is_selected, only_one_odd_card])
+
+        with open('bb_hummer_states.txt', 'w') as f:
+            f.write(str(bb_hummer_states))
+
 
         return bb_hummer_states
 
@@ -259,12 +263,36 @@ def initialise_env(k, depth):
     variables = Variables(k, depth)
     formulae = Formulae(variables)
     phi_spec = formulae.bb_hummer_states()
+
+    with open('phi_spec.txt', 'w') as f:
+            f.write(str(phi_spec.sexpr()))
+
     forbid_trivial = formulae.forbid_trivial_tricks()
 
     trans = formulae.constrain_connections()
     val_range = variables.value_range
     phi_des = And([val_range, trans, forbid_trivial])
+
+    # trick = synth_utils.list_to_constraint(
+    # [11, 1, 2, 18, 21, 13, 5, 6, 4, 9, 12, 7, 5, 14, 15], variables.comps
+    # )
+
+    # ver = And(phi_des, Not(phi_spec))
+    # s = Solver()
+    # s.add(ver, trick)
+    # check = s.check()
+    # print(check) # i want this to be sat -> there is a counterexample
+    # if str(check) == 'sat': # this means there is a counter example.
+    #                # there is some assignment to the choices such that the 
+    #                # the specification is violated
+    #     model = s.model()
+    #     synth_utils.pp_model(model, variables)
+
+
     return variables, formulae, phi_des, phi_spec
+
+initialise_env(15, 4)
+    
 
 
 #ver = Not(Implies(phi_des, spec))
