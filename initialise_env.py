@@ -260,9 +260,20 @@ class Formulae:
         with open('flip_after_cut_list.txt', 'w') as f:
             f.write(str(flip_after_cut_list))
 
+        singular_flips = []
+        for i in range(1, vars.k):
+            turn_top_singular = [Implies(vars.comps.get(i) == comp, vars.comps.get(i+1) != comp) for comp in self.move_comps_dict.get('turn_top')]
+            flip_2_singular = [Implies(vars.comps.get(i) == comp, vars.comps.get(i+1) != comp) for comp in self.move_comps_dict.get('flip_2')]
+            singular_flips.append(And(turn_top_singular))
+            singular_flips.append(And(flip_2_singular))
+
                 
-        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list)])
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
         
+        
+            
+        
+
         
         
         
@@ -336,7 +347,6 @@ def initialise_env(k, depth):
 
     return variables, formulae, phi_des, phi_spec
 
-initialise_env(15, 4)
     
 
 
