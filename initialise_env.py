@@ -108,11 +108,7 @@ class Formulae:
     def __init__(self, vars):
         self.vars = vars
         self.value_range = vars.value_range
-        
-        # this causes lots of coupling and I should think about a way
-        # to automatically assign the sumbers - maybe I could loop through
-        # each one assigning the next number untill number of hings is exhausted
-        # one thing I'm sure of, however, is that that is a job for another day. 
+         
         
         def generate_dicts(title_list):
             assignments = 1
