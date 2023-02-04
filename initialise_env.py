@@ -247,7 +247,7 @@ class Formulae:
         
         flip_after_cut_list = [] # this constrains the range of flip moves conditional on the presence of
                                  # a cut move to ensure that a flip is always after a cut
-        for i in range(1, vars.k+1):
+        for i in range(1, vars.k+1):    
             flip_after_cut = If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('straight_cut')]),
                                 Or(all_flip_moves[i:]), True)
             
