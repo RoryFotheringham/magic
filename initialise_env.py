@@ -143,13 +143,15 @@ class Formulae:
         self.move_comps_dict = move_comps_dict
         self.comp_move_dict = comp_move_dict
         self.nondetlib = generate_lib(['straight_cut'], move_comps_dict)
+        self.subsequences = self.generate_subsequences()
 
     # subsequence is a list of integers
     def phi_nondet(self, subsequence):
         nondet_seq = []
         for i in subsequence:
             for nd_value in self.nondetlib:
-                nondet_seq.append(self.vars.comps.get(i) == nd_value)
+                if i != 0:
+                    nondet_seq.append(self.vars.comps.get(i) == nd_value)
         return Or(nondet_seq)
 
     def phi_looping(self, subsequence):
@@ -157,9 +159,19 @@ class Formulae:
          self.vars.states.get((subsequence[-1],j)) for j in range(self.vars.depth)])
         return looping
 
-    def generate_subsequences():
-        
-        
+    def generate_subsequences(self):
+        sequence = list(range(self.vars.k+1))
+        n = len(sequence)
+        subsequences = []
+        for sub_len in range(2, n + 1):
+            
+            for i in range(n - sub_len + 1):
+                subsequence = []
+                j = i + sub_len -1
+                for k in range(i, j+1):
+                    subsequence.append(sequence[k])
+                subsequences.append(subsequence)
+        return subsequences
 
         
         
@@ -288,9 +300,9 @@ class Formulae:
             singular_flips.append(And(turn_top_singular))
             singular_flips.append(And(flip_2_singular))
 
-        forbid_det_loop_subseq = And([Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences])
+        forbid_det_loop_subseq = [Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
 
-        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
+        forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
         
         return forbid_trivial_tricks
 
@@ -333,6 +345,7 @@ class Formulae:
 def initialise_env(k, depth):
     variables = Variables(k, depth)
     formulae = Formulae(variables)
+    formulae.generate_subsequences()
     phi_spec = formulae.bb_hummer_states()
 
     with open('phi_spec.txt', 'w') as f:
@@ -363,7 +376,6 @@ def initialise_env(k, depth):
     return variables, formulae, phi_des, phi_spec
 
     
-
 
 #ver = Not(Implies(phi_des, spec))
 

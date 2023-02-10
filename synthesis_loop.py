@@ -55,4 +55,4 @@ def synth_loop(k, depth):
         else:
             input_set.append(counter_example)
 
-synth_loop(15, 5)
+synth_loop(15, 10)
