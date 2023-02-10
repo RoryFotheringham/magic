@@ -109,7 +109,14 @@ class Formulae:
         self.vars = vars
         self.value_range = vars.value_range
          
-        
+        def generate_lib(moves_in_lib, move_comps_dict):
+            lib = []
+            for move in moves_in_lib:
+                comps = move_comps_dict.get(move)
+                for comp in comps:
+                    lib.append(comp)
+            return lib
+
         def generate_dicts(title_list):
             assignments = 1
             move_comps_dict = {}
@@ -135,6 +142,23 @@ class Formulae:
                 
         self.move_comps_dict = move_comps_dict
         self.comp_move_dict = comp_move_dict
+        self.nondetlib = generate_lib(['straight_cut'], move_comps_dict)
+
+    # subsequence is a list of integers
+    def phi_nondet(self, subsequence):
+        nondet_seq = []
+        for i in subsequence:
+            for nd_value in self.nondetlib:
+                nondet_seq.append(self.vars.comps.get(i) == nd_value)
+        return Or(nondet_seq)
+
+    def phi_looping(self, subsequence):
+        looping = And([self.vars.states.get((subsequence[0],j)) == 
+         self.vars.states.get((subsequence[-1],j)) for j in range(self.vars.depth)])
+        return looping
+
+    def generate_subsequences():
+        
         
 
         
@@ -222,6 +246,7 @@ class Formulae:
             # ]))
         
         return And(valid_transitions)
+        
 
     def forbid_trivial_tricks(self):
         vars = self.vars
@@ -247,7 +272,7 @@ class Formulae:
         
         flip_after_cut_list = [] # this constrains the range of flip moves conditional on the presence of
                                  # a cut move to ensure that a flip is always after a cut
-        for i in range(1, vars.k+1):    
+        for i in range(1, vars.k+1):        
             flip_after_cut = If(Or([vars.comps.get(i) == comp for comp in self.move_comps_dict.get('straight_cut')]),
                                 Or(all_flip_moves[i:]), True)
             
@@ -263,15 +288,9 @@ class Formulae:
             singular_flips.append(And(turn_top_singular))
             singular_flips.append(And(flip_2_singular))
 
-                
-        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
-        
-        
-            
-        
+        forbid_det_loop_subseq = And([Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences])
 
-        
-        
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
         
         return forbid_trivial_tricks
 
@@ -301,7 +320,6 @@ class Formulae:
          If(Sum(final_state_vector) == -(vars.depth-2), selected_must_be_positive, True)])
 
 
-        
         bb_hummer_states = And([odd_is_selected, only_one_odd_card])
 
         with open('bb_hummer_states.txt', 'w') as f:
@@ -309,6 +327,7 @@ class Formulae:
 
 
         return bb_hummer_states
+
 
 
 def initialise_env(k, depth):
