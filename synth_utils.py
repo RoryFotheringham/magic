@@ -32,8 +32,8 @@ def counter_example_from_model(model, variables):
     counter_example = []
     for i in range(1, variables.k+1):
         counter_example.append(variables.choices.get(i) == model[variables.choices.get(i)])
-        counter_example.append(variables.states.get_array(i) == model[variables.states.get_array(i)])
-        counter_example.append(variables.selected.get(i) == model[variables.selected.get(i)]) 
+        #counter_example.append(variables.states.get_array(i) == model[variables.states.get_array(i)])
+        #counter_example.append(variables.selected.get(i) == model[variables.selected.get(i)]) 
     return And(counter_example)
         
 def candidate_from_model(model, variables):

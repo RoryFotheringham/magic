@@ -54,5 +54,6 @@ def synth_loop(k, depth):
             break
         else:
             input_set.append(counter_example)
+            print(counter_example)
 
-synth_loop(15, 10)
+synth_loop(15, 4)
