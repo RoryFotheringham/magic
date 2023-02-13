@@ -345,7 +345,7 @@ class Formulae:
 def initialise_env(k, depth):
     variables = Variables(k, depth)
     formulae = Formulae(variables)
-    formulae.generate_subsequences()
+    #formulae.generate_subsequences()
     phi_spec = formulae.bb_hummer_states()
 
     with open('phi_spec.txt', 'w') as f:

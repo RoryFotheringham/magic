@@ -6,6 +6,7 @@ from z3 import *
 def verify(variables, phi_des, phi_spec, candidate):
     ver = And(phi_des, Not(phi_spec))
     s = Solver()
+    print('the candidate being passed into the verifier\n{}'.format(candidate))
     s.add(ver, candidate)
     check = s.check()
     if str(check) == 'sat':
@@ -39,7 +40,7 @@ def synth_loop(k, depth):
     input_set = synth_utils.init_input_set(variables)
     while True:
         candidate, model = synthesise(variables, phi_des, phi_spec, input_set)
-        print(candidate)
+        #print(candidate)
         if candidate == None: # we must explicitly check None equality 
                               # because z3 type can't cast to concrete bool
             print('synthesis failed')
@@ -54,6 +55,6 @@ def synth_loop(k, depth):
             break
         else:
             input_set.append(counter_example)
-            print(counter_example)
+            #print(counter_example)
 
-synth_loop(15, 4)
+synth_loop(15, 5)
