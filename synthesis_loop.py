@@ -19,7 +19,8 @@ def verify(variables, phi_des, phi_spec, candidate):
 def synthesise(variables, phi_des, phi_spec, input_set):
     synth = And(phi_des, phi_spec)
     s = Solver()
-    s.add(synth, Or(input_set))
+    s.add(synth, Or(input_set)) #this is wrong and prone to lots of loops 
+                                # must change when possible. 
     check = s.check()
     if str(check) == 'unsat':
         return None

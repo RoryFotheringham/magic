@@ -300,10 +300,11 @@ class Formulae:
             singular_flips.append(And(turn_top_singular))
             singular_flips.append(And(flip_2_singular))
 
-        forbid_det_loop_subseq = [Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
+        forbid_det_loop_subseq = [And(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
 
         forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
-        
+        #forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
+
         return forbid_trivial_tricks
 
     def bb_hummer_states(self):
@@ -349,60 +350,45 @@ def initialise_env(k, depth):
     phi_spec = formulae.bb_hummer_states()
 
     with open('phi_spec.txt', 'w') as f:
-            f.write(str(phi_spec.sexpr()))
+            f.write(str(phi_spec))
 
     forbid_trivial = formulae.forbid_trivial_tricks()
 
     trans = formulae.constrain_connections()
     val_range = variables.value_range
+
+    with open('val_range.txt','w') as f:
+        f.write(str(val_range))
+
+    with open('forbid_trivial.txt','w') as f:
+        f.write(str(forbid_trivial))
+
+    with open('trans.txt','w') as f:
+        f.write(str(trans))
+
     phi_des = And([val_range, trans, forbid_trivial])
-
-    # trick = synth_utils.list_to_constraint(
-    # [11, 1, 2, 18, 21, 13, 5, 6, 4, 9, 12, 7, 5, 14, 15], variables.comps
-    # )
-
-    # ver = And(phi_des, Not(phi_spec))
-    # s = Solver()
-    # s.add(ver, trick)
-    # check = s.check()
-    # print(check) # i want this to be sat -> there is a counterexample
-    # if str(check) == 'sat': # this means there is a counter example.
-    #                # there is some assignment to the choices such that the 
-    #                # the specification is violated
-    #     model = s.model()
-    #     synth_utils.pp_model(model, variables)
-
-
+    #phi_des = And([val_range, trans])
     return variables, formulae, phi_des, phi_spec
 
-    
 
-#ver = Not(Implies(phi_des, spec))
+def verify_test(k, depth):
+    variables, formulae, phi_des, phi_spec = initialise_env(k, depth)
 
-# ver = And(phi_des, Not(phi_spec))
+    trick = synth_utils.list_to_constraint(
+    [7, 3, 28, 13, 16, 8, 9, 15, 4, 12, 5, 11, 14, 2, 1], variables.comps
+    )
 
-# original_baby = synth_utils.list_to_constraint(
-#     [1, 13, 7, 4, 8, 5, 9, 6, 14, 10, 11, 15], variables.comps
-# )
+    ver = And(phi_des, Not(phi_spec))
+    s = Solver()
+    s.add(ver, trick)
+    check = s.check()
+    print(check)
+    if str(check) == 'sat': 
+                   
+        model = s.model()
+        synth_utils.pp_counter_model(model, variables)
 
-# working_baby = synth_utils.list_to_constraint(
-#      [1, 13, 7, 4, 8, 5, 9, 14, 2, 3, 15, 17], variables.comps
-# )
-
-# s = Solver()
-# s.add(ver, original_baby)
-# f = open('query.txt', 'w')
-# #st = s.sexpr()
-# f.write(str(s.assertions()))
-# f.close()
-# check = s.check()
-# print(check)
-# if str(check) == 'sat': # this means there is a counter example.
-#                    # there is some assignment to the choices such that the 
-#                    # the specification is violated
-#     model = s.model()
-#     synth_utils.pp_model(model, variables)
-#     counter_example = synth_utils.counter_example_from_model(model, variables)
+verify_test(15, 5)
 
 
     
