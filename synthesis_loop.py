@@ -49,7 +49,7 @@ def synth_loop(k, depth):
         counter_example = verify(variables, phi_des, phi_spec, candidate)
         if counter_example == None:
             print('synthesis complete!')
-            print(synth_utils.pp_counter_model(model, variables))
+            print(synth_utils.pp_counter_model(model, variables, formulae))
             trick_list = synth_utils.trick_from_model(model, variables)
             print(trick_list)
             print(synth_utils.trick_to_strings(trick_list, formulae))

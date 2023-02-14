@@ -16,7 +16,7 @@ def list_to_constraint(lst, dict):
 
     return And(constraint)
 
-def pp_counter_model(model, variables):
+def pp_counter_model(model, variables, formulae):
     for i in range(0, variables.k+1):
         state_vector = []
         for j in range(variables.depth):
@@ -24,7 +24,7 @@ def pp_counter_model(model, variables):
         print('s_{}: {}'.format(i, state_vector))
         print('aud_{}: {}'.format(i, model[variables.selected.get(i)]))
         if i > 0:
-            print('comp_{}: {}'.format(i, model[variables.comps.get(i)]))
+            print('comp_{}: {}'.format(i, formulae.comp_move_dict.get(model[variables.comps.get(i)].as_long())))
             print('choice_{}: {}'.format(i, model[variables.choices.get(i)]))
         print('\n')
 

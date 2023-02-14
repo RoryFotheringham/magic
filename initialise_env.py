@@ -299,8 +299,10 @@ class Formulae:
             flip_2_singular = [Implies(vars.comps.get(i) == comp, vars.comps.get(i+1) != comp) for comp in self.move_comps_dict.get('flip_2')]
             singular_flips.append(And(turn_top_singular))
             singular_flips.append(And(flip_2_singular))
-
-        forbid_det_loop_subseq = [And(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
+        #print(self.subsequences[13])
+        forbid_det_loop_subseq = [Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
+        print(forbid_det_loop_subseq[13])
+        print(forbid_det_loop_subseq[14])
 
         forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
         #forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
@@ -386,7 +388,12 @@ def verify_test(k, depth):
     if str(check) == 'sat': 
                    
         model = s.model()
-        synth_utils.pp_counter_model(model, variables)
+        #synth_utils.pp_counter_model(model, variables)
+        
+    solve = Solver()
+    solve.add(And(phi_des, phi_spec), trick)
+    solve.check()
+    synth_utils.pp_counter_model(solve.model(),variables, formulae)
 
 verify_test(15, 5)
 
