@@ -3,13 +3,13 @@ import synth_utils
 
 
 class StatesAPI:
-    def __init__(self, k, depth):
+    def __init__(self, k, depth, instance):
         self.depth = depth
         self.state_vectors = {}
-        self.state_vectors.update({0 : Array('s_0', IntSort(), IntSort())})
+        self.state_vectors.update({0 : Array('s_{}_0'.format(instance), IntSort(), IntSort())})
 
         for i in range(1, k+1):
-            self.state_vectors.update({i : Array('s_{}'.format(i), IntSort(), IntSort())})
+            self.state_vectors.update({i : Array('s_{}_{}'.format(instance, i), IntSort(), IntSort())})
 
     def get_array(self, i):
         return self.state_vectors.get(i)
@@ -26,18 +26,19 @@ class StatesAPI:
         
 
 class Variables:
-    def __init__(self, k, depth):
+    def __init__(self, k, depth, instance):
         #self.solver = Solver()
+        self.instance = instance
         self.k = k
         self.depth = depth
         self.comps = {}
-        self.states = StatesAPI(k, depth)
+        self.states = StatesAPI(k, depth, instance)
         self.selected = {}
         self.number_of_operators = 15
         self.lib_size = self.k + self.number_of_operators #  warning - must update this value if changing number of components in library
                           #  don't get lib_size confused with k. lib_size describes range of component values. 
                           # k is the length of the trick. Remember, is shorter than the number of components. 
-        self.selected.update({0 : Int('aud_0')})
+        self.selected.update({0 : Int('aud_{}_0'.format(instance))})
         
         # for j in range(self.depth):
         #     self.states.update({(0, j) : Int("s_0_{}".format(j))})
@@ -50,8 +51,8 @@ class Variables:
     def generate_variables(self):
         for i in range(1, self.k+1):
             self.comps.update({i : Int("i_{}".format(i))})
-            self.choices.update({i : Int("c_{}".format(i))})
-            self.selected.update({i : Int("aud_{}".format(i))})
+            self.choices.update({i : Int("c_{}_{}".format(self.instance,i))})
+            self.selected.update({i : Int("aud_{}_{}".format(self.instance, i))})
             # for j in range(self.depth):
             #     self.states.update({(i,j) : Int("s_{0}_{1}".format(i, j))})        
 
@@ -304,9 +305,11 @@ class Formulae:
         print(forbid_det_loop_subseq[13])
         print(forbid_det_loop_subseq[14])
 
-        forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
-        #forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
-
+        #forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
+        
+        #the det_loop_subseq is added outside the model
+        
         return forbid_trivial_tricks
 
     def bb_hummer_states(self):
@@ -345,8 +348,8 @@ class Formulae:
 
 
 
-def initialise_env(k, depth):
-    variables = Variables(k, depth)
+def initialise_env(k, depth, instance):
+    variables = Variables(k, depth, instance)
     formulae = Formulae(variables)
     #formulae.generate_subsequences()
     phi_spec = formulae.bb_hummer_states()
@@ -395,7 +398,7 @@ def verify_test(k, depth):
     solve.check()
     synth_utils.pp_counter_model(solve.model(),variables, formulae)
 
-verify_test(15, 5)
+#verify_test(15, 5)
 
 
     
