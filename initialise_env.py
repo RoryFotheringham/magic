@@ -302,8 +302,8 @@ class Formulae:
             singular_flips.append(And(flip_2_singular))
         #print(self.subsequences[13])
         forbid_det_loop_subseq = [Implies(self.phi_looping(q), self.phi_nondet(q)) for q in self.subsequences]
-        print(forbid_det_loop_subseq[13])
-        print(forbid_det_loop_subseq[14])
+        #print(forbid_det_loop_subseq[13])
+        #print(forbid_det_loop_subseq[14])
 
         #forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
         forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
