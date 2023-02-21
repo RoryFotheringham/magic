@@ -14,8 +14,8 @@ def verify(instance, k, depth, candidate):
     check = s.check()
     if str(check) == 'sat':
         model = s.model()
-        with open('candidate_model.txt', 'w') as f:
-            f.write(str(model))
+        # with open('candidate_model.txt', 'w') as f:
+        #     f.write(str(model))
         counter_example = synth_utils.counter_example_from_model(model, ver_variables)
         return counter_example, ver_variables, ver_formulae
     else:
@@ -36,15 +36,17 @@ def synthesise(instance, k, depth, input_set, synth_list):
     for i in range(len(input_set)):
         synth = synth_list[i]
         choices = input_set[i]
+        
         to_add.append(synth)
+        #if i == 0:
         to_add.append(choices)
         
         #s.add(synth, choices)
         
         
     s.add(And(to_add))
-    with open('synth_query.txt', 'w') as f:
-            f.write(str(s.sexpr()))
+    # with open('synth_query.txt', 'w') as f:
+    #         f.write(str(s.sexpr()))
     check = s.check()
     if str(check) == 'unsat':
         return None, None, None
@@ -75,6 +77,8 @@ def synth_loop(k, depth):
     while True:
         candidate, model, synth_list = synthesise(instance, k, depth, input_set, synth_list)
         #print(candidate)
+        if instance == 1:
+            print('hey')
         if candidate == None: # we must explicitly check None equality 
                               # because z3 type can't cast to concrete bool
             print('synthesis failed')
@@ -92,4 +96,4 @@ def synth_loop(k, depth):
             #print(counter_example)
         instance += 1
 
-synth_loop(15, 6)
+synth_loop(15, 4)
