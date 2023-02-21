@@ -37,8 +37,7 @@ def synthesise(instance, k, depth, input_set, synth_list):
         synth = synth_list[i]
         choices = input_set[i]
         to_add.append(synth)
-        if False:
-            to_add.append(choices)
+        to_add.append(choices)
         
         #s.add(synth, choices)
         
