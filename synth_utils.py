@@ -70,3 +70,26 @@ def init_input_set(variables):
     for i in range(1, variables.k+1):
         input_set.append(variables.choices.get(i) == 0)
     return [And(input_set)]
+
+
+# it could be interesting to see whether the explicit instantiation of the states
+# makes a difference but not an essential part of the project.
+#
+# def phi_looping(self, subsequence):
+#     looping = And([self.vars.states.get((subsequence[0],j)) == 
+#         self.vars.states.get((subsequence[-1],j)) for j in range(self.vars.depth)])
+#     return looping        
+        
+def generate_subsequences(trick_len):
+        sequence = list(range(trick_len+1))
+        n = len(sequence)
+        subsequences = []
+        for sub_len in range(2, n + 1):
+            
+            for i in range(n - sub_len + 1):
+                subsequence = []
+                j = i + sub_len -1
+                for k in range(i, j+1):
+                    subsequence.append(sequence[k])
+                subsequences.append(subsequence)
+        return subsequences
