@@ -3,6 +3,8 @@ from initialise_env import initialise_env
 import synth_utils
 from initialise_env import Variables, Formulae
 from z3 import *
+import sys
+from time import time
 
 def phi_ndl(vars: Variables, form: Formulae, q):
     '''creates a logical formula which is true if the 
@@ -101,7 +103,7 @@ def synthesise(instance, k, depth, input_set, synth_list, ndl_conjunction, subse
 # for all other occasions, it is fine for it to float around as a global
 # because it is a pretty lightweight object
 
-def synth_loop(k, depth):
+def synth_loop(k, depth, seed=0):
     '''
     this is where the magic happens
     '''
@@ -110,7 +112,7 @@ def synth_loop(k, depth):
     # initialise the environment for the verifier which never changes
     initial_variables, initial_formulae, initial_phi_des, initial_phi_spec = initialise_env(k, depth, '0')
     
-    input_set = synth_utils.init_input_set(initial_variables)
+    input_set = synth_utils.init_input_set(initial_variables, seed)
     ndl_conjunction = init_ndl_conjunction(initial_variables, initial_formulae, subseqs)
     synth_list = []
     instance = 0
@@ -120,19 +122,30 @@ def synth_loop(k, depth):
 
         if candidate == None: # we must explicitly check None equality 
                               # because z3 type can't cast to concrete bool
-            print('synthesis failed')
+            #print('synthesis failed')
+            final_string = 'synthesis failed'
             break
         counter_example, ver_variables, ver_formulae = verify(instance, k, depth, candidate)
         if counter_example == None:
-            print('synthesis complete!')
+            #print('synthesis complete!')
             print(synth_utils.pp_counter_model(model, initial_variables, initial_formulae))
             trick_list = synth_utils.trick_from_model(model, initial_variables)
-            print(trick_list)
-            print(synth_utils.trick_to_strings(trick_list, initial_formulae))
+            #print(trick_list)
+            #print(synth_utils.trick_to_strings(trick_list, initial_formulae))
+            final_string = synth_utils.trick_to_strings(trick_list, initial_formulae)
             break
         else:
             input_set.append(counter_example)
             #print(counter_example)
         instance += 1
+    return final_string
 
-synth_loop(15, 5)
+
+if __name__ == '__main__':
+    k = int(sys.argv[1])
+    depth = int(sys.argv[2])
+    seed = int(sys.argv[3])
+    start = time()
+    print(synth_loop(k, depth, seed))
+    end = time()
+    print(f'runtime: {end-start}')

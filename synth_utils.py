@@ -60,15 +60,19 @@ def trick_to_strings(trick_list, formulae):
     return strings
 
 
-def trick_from_candidate(candidate, variables, formulae):
+#def trick_from_candidate(candidate, variables, formulae):
     # for i in range(1, variables.k+1):
     #     print(candidate[0]
-    print(candidate)
+    #print(candidate)
 
-def init_input_set(variables):
+def init_input_set(variables, seed=0):
     input_set = []
     for i in range(1, variables.k+1):
-        input_set.append(variables.choices.get(i) == 0)
+        if seed > 0:
+            input_set.append(variables.choices.get(i) == 1)
+            seed = seed -1
+        else:
+            input_set.append(variables.choices.get(i) == 0)
     return [And(input_set)]
 
 

@@ -1,0 +1,6 @@
+
+=========| k = 20 , depth = 3 |=============
+['top_2_to_bottom', 'top_to_bottom', 'straight_cut', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'turn_top']
+runtime: 178.90230536460876
+\n
+\n
