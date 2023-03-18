@@ -85,7 +85,7 @@ def init_input_set(variables, seed=0):
 #     return looping        
         
 def generate_subsequences(trick_len):
-        sequence = list(range(trick_len+1))
+        sequence = list(range(1, trick_len+1))
         n = len(sequence)
         subsequences = []
         for sub_len in range(2, n + 1):
@@ -97,3 +97,4 @@ def generate_subsequences(trick_len):
                     subsequence.append(sequence[k])
                 subsequences.append(subsequence)
         return subsequences
+

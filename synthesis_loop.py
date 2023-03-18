@@ -15,13 +15,14 @@ def phi_ndl(vars: Variables, form: Formulae, q):
 
 
 def phi_looping(vars: Variables, q):
-    return vars.states.get_array(q[0]) == vars.states.get_array(q[-1])
+    return vars.states.get_array(q[0]-1) == vars.states.get_array(q[-1])
   
 
 def phi_nondet(vars: Variables, form: Formulae, q):
     nondet_disjunction = []
-    for index in q:
+    for count, index in enumerate(q):
         if index != 0:
+        #if count > 0:
             for nondet_comp in form.nondetlib:
                 nondet_disjunction.append(vars.comps.get(index) == nondet_comp)
     return Or(nondet_disjunction)
@@ -130,14 +131,22 @@ def synth_loop(k, depth, seed=0):
             #print('synthesis complete!')
             print(synth_utils.pp_counter_model(model, initial_variables, initial_formulae))
             trick_list = synth_utils.trick_from_model(model, initial_variables)
-            #print(trick_list)
+            print(trick_list)
             #print(synth_utils.trick_to_strings(trick_list, initial_formulae))
             final_string = synth_utils.trick_to_strings(trick_list, initial_formulae)
+            
+            tmp = []
+            for dis in ndl_conjunction:
+                tmp.append(Or(dis))
+
+            with open('ndlconj.txt', 'w') as f:
+                f.write(str(ndl_conjunction))
             break
         else:
             input_set.append(counter_example)
             #print(counter_example)
         instance += 1
+    print(input_set)
     return final_string
 
 
