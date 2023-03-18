@@ -1,6 +1,130 @@
 
-=========| k = 20 , depth = 3 |=============
-['top_2_to_bottom', 'top_to_bottom', 'straight_cut', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'turn_top']
-runtime: 178.90230536460876
+=========| k = 15 , depth = 3 |=============
+instance  0
+instance  1
+instance  2
+instance  3
+['flip_2', 'top_to_bottom', 'straight_cut', 'straight_cut', 'straight_cut', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom', 'flip_2', 'top_to_bottom', 'turn_top']
+runtime: 133.3621265888214
+ 
+instance  0
+instance  1
+instance  2
+['flip_2', 'top_to_bottom', 'straight_cut', 'top_2_to_bottom', 'top_2_to_bottom', 'turn_top', 'top_to_bottom', 'turn_top', 'flip_2', 'top_to_bottom', 'turn_top', 'top_2_to_bottom']
+runtime: 47.01233243942261
+ 
+instance  0
+instance  1
+['top_to_bottom', 'flip_2', 'top_to_bottom', 'turn_top', 'top_to_bottom', 'straight_cut', 'top_2_to_bottom', 'top_2_to_bottom', 'turn_top', 'flip_2', 'turn_top']
+runtime: 18.055840969085693
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+['flip_2', 'top_to_bottom', 'straight_cut', 'straight_cut', 'top_to_bottom', 'turn_top', 'top_to_bottom', 'turn_top', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'turn_top']
+runtime: 155.9309344291687
+ 
+=========| k = 15 , depth = 4 |=============
+instance  0
+instance  1
+['flip_2', 'top_2_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'top_to_bottom', 'straight_cut', 'flip_2', 'top_2_to_bottom', 'turn_top', 'top_to_bottom', 'turn_top']
+runtime: 14.539244174957275
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
+['top_to_bottom', 'turn_top', 'straight_cut', 'straight_cut', 'flip_2', 'top_to_bottom', 'flip_2', 'turn_top', 'top_2_to_bottom', 'turn_top', 'top_to_bottom']
+runtime: 222.87851929664612
+ 
+instance  0
+instance  1
+['top_to_bottom', 'turn_top', 'top_to_bottom', 'straight_cut', 'flip_2', 'top_to_bottom', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom']
+runtime: 24.15782380104065
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+['top_2_to_bottom', 'turn_top', 'top_to_bottom', 'top_to_bottom', 'flip_2', 'top_to_bottom', 'straight_cut', 'top_2_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom']
+runtime: 163.15019726753235
+ 
+=========| k = 15 , depth = 5 |=============
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
+instance  5
+['flip_2', 'top_2_to_bottom', 'flip_2', 'top_to_bottom', 'straight_cut', 'top_to_bottom', 'straight_cut', 'straight_cut', 'top_2_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom']
+runtime: 1107.2347965240479
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+['flip_2', 'top_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom']
+runtime: 209.32169890403748
+ 
+instance  0
+['top_2_to_bottom', 'flip_2', 'top_to_bottom', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 9.2001473903656
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
+['flip_2', 'top_2_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'straight_cut', 'straight_cut', 'top_to_bottom', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top']
+runtime: 635.6875622272491
+ 
+=========| k = 15 , depth = 6 |=============
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
+instance  5
+['turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_to_bottom', 'top_to_bottom', 'top_2_to_bottom', 'flip_2', 'top_2_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 1231.1058769226074
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
+['turn_top', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top']
+runtime: 1034.2161192893982
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+['turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top']
+runtime: 266.044410943985
+ 
+instance  0
+instance  1
+instance  2
+instance  3
+['flip_2', 'top_2_to_bottom', 'turn_top', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top', 'top_to_bottom']
+runtime: 2098.0456302165985
+ 
+=========| k = 15 , depth = 6 |=============
+instance  0
+instance  1
+instance  2
+instance  3
+['turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top']
+runtime: 267.512891292572
 \n
+=========| k = 15 , depth = 7 |=============
+instance  0
+instance  1
+instance  2
+instance  3
+instance  4
 \n
+=========| k = 15 , depth = 8 |=============

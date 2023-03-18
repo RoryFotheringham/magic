@@ -12,6 +12,7 @@ class StatesAPI:
             self.state_vectors.update({i : Array('s_{}_{}'.format(instance, i), IntSort(), IntSort())})
 
     def get_array(self, i):
+        #print('dont get an array it is bad')
         return self.state_vectors.get(i)
     def get(self, tpl):
         i = tpl[0]

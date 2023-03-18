@@ -15,7 +15,7 @@ def phi_ndl(vars: Variables, form: Formulae, q):
 
 
 def phi_looping(vars: Variables, q):
-    return vars.states.get_array(q[0]-1) == vars.states.get_array(q[-1])
+    return And([vars.states.get(((q[0]-1), j)) == vars.states.get((q[-1], j)) for j in range(vars.depth)])
   
 
 def phi_nondet(vars: Variables, form: Formulae, q):
@@ -65,6 +65,7 @@ def verify(instance, k, depth, candidate):
 
 def synthesise(instance, k, depth, input_set, synth_list, ndl_conjunction, subseqs):
     #print(input_set)
+    print('instance ', instance)
     synth_variables, synth_formulae, synth_phi_des, synth_phi_spec = initialise_env(k, depth, str(instance))
     new_synth = And(synth_phi_des, synth_phi_spec)
     
@@ -77,14 +78,29 @@ def synthesise(instance, k, depth, input_set, synth_list, ndl_conjunction, subse
     if len(input_set) != len(synth_list):
         raise InvalidStateErr('there is not a corresponding synth env for each input')
     
+    # for i in range(len(input_set)):
+    #     synth = synth_list[i]
+    #     choices = input_set[i]
+    #     s.add(synth, choices)
+    
+    # for ndl_disjunction in ndl_conjunction:
+    #     s.add(Or(ndl_disjunction))
+    psi_synth = []
     for i in range(len(input_set)):
         synth = synth_list[i]
         choices = input_set[i]
-        s.add(synth, choices)
-    
-    for ndl_disjunction in ndl_conjunction:
-        s.add(Or(ndl_disjunction))
+        psi_synth.append(And(synth, choices))
         
+    ndl_synth = []
+    for ndl_disjunction in ndl_conjunction:
+        ndl_synth.append(Or(ndl_disjunction))
+        
+    final_synth = And(And(psi_synth), And(ndl_synth))
+        
+    with open('final_synth.txt', 'w') as f:
+        f.write(str(final_synth.sexpr()))
+        
+    s.add(final_synth)
         
     #for q in subseqs:
     
@@ -129,9 +145,9 @@ def synth_loop(k, depth, seed=0):
         counter_example, ver_variables, ver_formulae = verify(instance, k, depth, candidate)
         if counter_example == None:
             #print('synthesis complete!')
-            print(synth_utils.pp_counter_model(model, initial_variables, initial_formulae))
+            #print(synth_utils.pp_counter_model(model, initial_variables, initial_formulae))
             trick_list = synth_utils.trick_from_model(model, initial_variables)
-            print(trick_list)
+            #print(trick_list)
             #print(synth_utils.trick_to_strings(trick_list, initial_formulae))
             final_string = synth_utils.trick_to_strings(trick_list, initial_formulae)
             
@@ -146,7 +162,7 @@ def synth_loop(k, depth, seed=0):
             input_set.append(counter_example)
             #print(counter_example)
         instance += 1
-    print(input_set)
+    #print(input_set)
     return final_string
 
 
