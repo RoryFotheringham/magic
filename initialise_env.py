@@ -169,7 +169,7 @@ class Formulae:
 
             flip_2_states = If(vars.states.get((i-1, 0)) == vars.states.get((i-1,1)),
              And([vars.states.get((i-1, 0)) == vars.states.get((i, 0)) * -1,
-                vars.states.get((i-1, 1)) == vars.states.get((i, 1)) * -1]), noop)
+                vars.states.get((i-1, 1)) == vars.states.get((i, 1)) * -1]), noop_states)
 
 
             flip_2_extra_states = And([vars.states.get((i-1, j)) ==
@@ -233,7 +233,7 @@ class Formulae:
         return And(valid_transitions)
         
 
-    def forbid_trivial_tricks(self):
+    def forbid_trivial_tricks(self, cuts):
         vars = self.vars
         cut_assertions_disjunct = []
         cut_assertions_conjunct = []
@@ -263,6 +263,18 @@ class Formulae:
             
             flip_after_cut_list.append(flip_after_cut)
             
+        if cuts == 1:
+            cutlib_conj = []
+        else:
+            cutlib_conj = []
+            for comp in self.move_comps_dict.get('straight_cut')[:cuts]:
+                cutlib_dis = []
+                for i in range(2, vars.k):
+                    cutlib_dis.append(And(vars.comps.get(i) == comp, And([And(vars.comps.get(i-1) != n_comp, vars.comps.get(i+1) != n_comp, vars.comps.get(i+1) <= vars.number_of_operators, vars.comps.get(i-1) <= vars.number_of_operators )
+                                                                          for n_comp in self.move_comps_dict.get('straight_cut') if n_comp != comp])))
+                cutlib_conj.append(Or(cutlib_dis))
+                
+                
         with open('flip_after_cut_list.txt', 'w') as f:
             f.write(str(flip_after_cut_list))
 
@@ -278,7 +290,7 @@ class Formulae:
         #print(forbid_det_loop_subseq[14])
 
         #forbid_trivial_tricks = And([And(forbid_det_loop_subseq), And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
-        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips)])
+        forbid_trivial_tricks = And([And(cut_assertions_conjunct), Or(cut_assertions_disjunct), And(flip_after_cut_list), And(singular_flips), And(cutlib_conj)])
         
         #the det_loop_subseq is added outside the model
         
@@ -320,7 +332,7 @@ class Formulae:
 
 
 
-def initialise_env(k, depth, instance):
+def initialise_env(k, depth, instance, cuts):
     variables = Variables(k, depth, instance)
     formulae = Formulae(variables)
     #formulae.generate_subsequences()
@@ -329,7 +341,7 @@ def initialise_env(k, depth, instance):
     with open('phi_spec.txt', 'w') as f:
             f.write(str(phi_spec))
 
-    forbid_trivial = formulae.forbid_trivial_tricks()
+    forbid_trivial = formulae.forbid_trivial_tricks(cuts)
 
     trans = formulae.constrain_connections()
     val_range = variables.value_range

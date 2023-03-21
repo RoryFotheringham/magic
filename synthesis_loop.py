@@ -6,6 +6,8 @@ from z3 import *
 import sys
 from time import time
 
+global cuts
+
 def phi_ndl(vars: Variables, form: Formulae, q):
     '''creates a logical formula which is true if the 
     subsequence q is not a deterministic loop
@@ -47,7 +49,7 @@ def append_ndl_conjunction(ndl_conjunction, new_vars, new_form, subseqs):
 
 def verify(instance, k, depth, candidate):
     
-    ver_variables, ver_formulae, ver_phi_des, ver_phi_spec = initialise_env(k, depth, str(instance+1))
+    ver_variables, ver_formulae, ver_phi_des, ver_phi_spec = initialise_env(k, depth, str(instance+1), cuts)
     ver = And(ver_phi_des, Not(ver_phi_spec))
     s = Solver()
     #print('the candidate being passed into the verifier\n{}'.format(candidate))
@@ -66,7 +68,7 @@ def verify(instance, k, depth, candidate):
 def synthesise(instance, k, depth, input_set, synth_list, ndl_conjunction, subseqs):
     #print(input_set)
     print('instance ', instance)
-    synth_variables, synth_formulae, synth_phi_des, synth_phi_spec = initialise_env(k, depth, str(instance))
+    synth_variables, synth_formulae, synth_phi_des, synth_phi_spec = initialise_env(k, depth, str(instance), cuts)
     new_synth = And(synth_phi_des, synth_phi_spec)
     
     # in place function appends the new ndl constraints to the list for each variable
@@ -127,7 +129,7 @@ def synth_loop(k, depth, seed=0):
     subseqs = synth_utils.generate_subsequences(k)
 
     # initialise the environment for the verifier which never changes
-    initial_variables, initial_formulae, initial_phi_des, initial_phi_spec = initialise_env(k, depth, '0')
+    initial_variables, initial_formulae, initial_phi_des, initial_phi_spec = initialise_env(k, depth, '0', cuts)
     
     input_set = synth_utils.init_input_set(initial_variables, seed)
     ndl_conjunction = init_ndl_conjunction(initial_variables, initial_formulae, subseqs)
@@ -170,6 +172,7 @@ if __name__ == '__main__':
     k = int(sys.argv[1])
     depth = int(sys.argv[2])
     seed = int(sys.argv[3])
+    cuts = int(sys.argv[4])
     start = time()
     print(synth_loop(k, depth, seed))
     end = time()
