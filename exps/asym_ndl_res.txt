@@ -1,0 +1,69 @@
+
+=========| k = 15 , depth = 3 |=============
+['flip_2', 'top_2_to_bottom', 'straight_cut', 'top_2_to_bottom', 'straight_cut', 'top_2_to_bottom', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_to_bottom']
+runtime: 4.998441934585571
+ 
+['turn_top', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom']
+runtime: 3.8826496601104736
+ 
+['flip_2', 'top_2_to_bottom', 'straight_cut', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'flip_2', 'top_2_to_bottom', 'turn_top', 'top_to_bottom']
+runtime: 21.033782482147217
+ 
+['flip_2', 'top_to_bottom', 'straight_cut', 'top_2_to_bottom', 'top_2_to_bottom', 'straight_cut', 'top_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top']
+runtime: 2.104843854904175
+ 
+['flip_2', 'top_2_to_bottom', 'straight_cut', 'top_2_to_bottom', 'straight_cut', 'top_2_to_bottom', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_to_bottom']
+runtime: 4.896327257156372
+ 
+['turn_top', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'top_2_to_bottom']
+runtime: 3.8527112007141113
+ 
+=========| k = 15 , depth = 4 |=============
+['top_to_bottom', 'turn_top', 'straight_cut', 'straight_cut', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'top_2_to_bottom', 'flip_2']
+runtime: 82.04593849182129
+ 
+['flip_2', 'turn_top', 'straight_cut', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'flip_2']
+runtime: 96.94890570640564
+ 
+['top_to_bottom', 'flip_2', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'straight_cut', 'top_2_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top', 'flip_2']
+runtime: 4.005739688873291
+ 
+['flip_2', 'turn_top', 'straight_cut', 'straight_cut', 'straight_cut', 'top_to_bottom', 'flip_2', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom']
+runtime: 12.23444414138794
+ 
+['top_to_bottom', 'turn_top', 'straight_cut', 'straight_cut', 'turn_top', 'flip_2', 'top_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'top_2_to_bottom', 'flip_2']
+runtime: 81.66008377075195
+ 
+['flip_2', 'turn_top', 'straight_cut', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'turn_top', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'flip_2']
+runtime: 97.41531753540039
+ 
+=========| k = 15 , depth = 5 |=============
+['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom', 'top_2_to_bottom']
+runtime: 40.1849365234375
+ 
+['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'straight_cut', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 34.77399682998657
+ 
+['turn_top', 'top_2_to_bottom', 'top_to_bottom', 'top_to_bottom', 'flip_2', 'straight_cut', 'straight_cut', 'turn_top', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'flip_2', 'top_2_to_bottom']
+runtime: 75.99318194389343
+ 
+['flip_2', 'top_to_bottom', 'top_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'top_2_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 756.550794839859
+ 
+['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom', 'top_2_to_bottom']
+runtime: 40.41522192955017
+ 
+['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'straight_cut', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 32.81431436538696
+ 
+=========| k = 15 , depth = 6 |=============
+['turn_top', 'top_to_bottom', 'flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_2_to_bottom', 'flip_2', 'turn_top', 'top_to_bottom', 'turn_top', 'top_2_to_bottom', 'top_to_bottom']
+runtime: 89.62654829025269
+ 
+['flip_2', 'top_2_to_bottom', 'flip_2', 'top_2_to_bottom', 'turn_top', 'straight_cut', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom']
+runtime: 519.22132396698
+ 
+['flip_2', 'top_2_to_bottom', 'top_2_to_bottom', 'turn_top', 'top_to_bottom', 'top_2_to_bottom', 'top_to_bottom', 'flip_2', 'top_to_bottom', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
+runtime: 1645.268443107605
+ 
+ 
