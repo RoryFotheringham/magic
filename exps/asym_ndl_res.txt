@@ -51,7 +51,7 @@ runtime: 75.99318194389343
 runtime: 756.550794839859
  
 ['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'turn_top', 'flip_2', 'turn_top', 'top_2_to_bottom', 'top_2_to_bottom']
-runtime: 40.41522192955017
+runtime:  756.550794839859
  
 ['flip_2', 'top_2_to_bottom', 'flip_2', 'straight_cut', 'top_to_bottom', 'straight_cut', 'straight_cut', 'turn_top', 'flip_2', 'turn_top']
 runtime: 32.81431436538696

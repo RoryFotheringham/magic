@@ -97,11 +97,11 @@ class Variables:
             
         # conjoins these formulae into value_range
         value_range = And([And(component_vals), And(states_vals), And(choice_vals), And(selected_vals)])
-        f = open('range', 'w')
-        temp = Solver()
-        temp.add(value_range)
-        f.write(str(temp.assertions()))
-        f.close()
+        # f = open('range', 'w')
+        # temp = Solver()
+        # temp.add(value_range)
+        # f.write(str(temp.assertions()))
+        # f.close()
 
         return value_range
 
@@ -275,8 +275,8 @@ class Formulae:
                 cutlib_conj.append(Or(cutlib_dis))
                 
                 
-        with open('flip_after_cut_list.txt', 'w') as f:
-            f.write(str(flip_after_cut_list))
+        # with open('flip_after_cut_list.txt', 'w') as f:
+        #     f.write(str(flip_after_cut_list))
 
         singular_flips = []
         for i in range(1, vars.k):
@@ -324,39 +324,46 @@ class Formulae:
 
         bb_hummer_states = And([odd_is_selected, only_one_odd_card])
 
-        with open('bb_hummer_states.txt', 'w') as f:
-            f.write(str(bb_hummer_states))
+        # with open('bb_hummer_states.txt', 'w') as f:
+        #     f.write(str(bb_hummer_states))
 
 
         return bb_hummer_states
 
 
 
-def initialise_env(k, depth, instance, cuts):
+def initialise_env(k, depth, instance, cuts, trivs_asym):
     variables = Variables(k, depth, instance)
     formulae = Formulae(variables)
     #formulae.generate_subsequences()
     phi_spec = formulae.bb_hummer_states()
 
-    with open('phi_spec.txt', 'w') as f:
-            f.write(str(phi_spec))
+    # with open('phi_spec.txt', 'w') as f:
+    #         f.write(str(phi_spec))
 
-    forbid_trivial = formulae.forbid_trivial_tricks(cuts)
+    
+
+    #forbid_trivial = formulae.forbid_trivial_tricks(cuts)
 
     trans = formulae.constrain_connections()
     val_range = variables.value_range
 
-    with open('val_range.txt','w') as f:
-        f.write(str(val_range))
+    # with open('val_range.txt','w') as f:
+    #     f.write(str(val_range))
 
-    with open('forbid_trivial.txt','w') as f:
-        f.write(str(forbid_trivial))
+    # #with open('forbid_trivial.txt','w') as f:
+    #     #f.write(str(forbid_trivial))
 
-    with open('trans.txt','w') as f:
-        f.write(str(trans))
+    # with open('trans.txt','w') as f:
+    #     f.write(str(trans))
 
-    phi_des = And([val_range, trans, forbid_trivial])
-    #phi_des = And([val_range, trans])
+    #phi_des = And([val_range, trans, forbid_trivial])
+    if trivs_asym:
+        phi_des = And([val_range, trans])
+    else:
+        forbid_trivial = formulae.forbid_trivial_tricks(cuts)
+        phi_des = And([val_range, trans, forbid_trivial])
+
     return variables, formulae, phi_des, phi_spec
 
 
